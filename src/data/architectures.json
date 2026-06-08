@@ -1,0 +1,300 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-06-08",
+  "architectures": [
+    {
+      "id": "web-spa",
+      "display_name": "网页应用（本地数据）",
+      "description": "适合工具类网页，数据存浏览器本地，无需登录",
+      "examples": ["B 站浏览记录管理", "番茄钟", "本地笔记工具", "错题本", "小工具集合"],
+      "trigger": { "use_case": "web", "data": ["browser_local", "none"], "users": ["single"] },
+      "stack": {
+        "language": "TypeScript",
+        "framework": "React 19",
+        "build_tool": "Vite 6",
+        "styling": "Tailwind v4",
+        "data": "Dexie.js (IndexedDB)",
+        "state": "useState + Context (no Redux/Zustand)"
+      },
+      "init_steps": [
+        { "type": "exec", "cmd": "npm create vite@latest . -- --template react-ts", "stdin": "y\n" },
+        { "type": "exec", "cmd": "npm install" },
+        { "type": "exec", "cmd": "npm install -D tailwindcss@next @tailwindcss/vite@next" },
+        { "type": "exec", "cmd": "npm install dexie dexie-react-hooks" },
+        { "type": "write", "file": "vite.config.ts", "template": "web-spa/vite.config.ts" },
+        { "type": "write", "file": "src/index.css", "template": "web-spa/index.css" },
+        { "type": "write", "file": "src/db.ts", "template": "web-spa/db.ts" }
+      ],
+      "gitignore_additions": ["node_modules/", "dist/", ".env.local", ".vite/"],
+      "test_command": "npm test",
+      "build_command": "npm run build",
+      "dev_command": "npm run dev",
+      "lint_command": "npm run lint",
+      "agents_md_rules": [
+        "**NEVER** introduce Redux, MobX, Zustand, or any global state library — use React Context for shared state, useState for local",
+        "**NEVER** add CSS-in-JS libraries (styled-components, emotion) — use Tailwind utility classes only",
+        "**NEVER** install UI component libraries (MUI, Ant Design, Chakra) without explicit user request — build with Tailwind",
+        "**NEVER** persist data to localStorage directly — use Dexie (IndexedDB) for all data storage",
+        "**NEVER** make HTTP requests to a backend — this is a frontend-only app",
+        "**ALWAYS** use functional components with hooks, never class components",
+        "**ALWAYS** colocate component files: Button.tsx + Button.test.tsx + Button.module.css in src/components/Button/"
+      ],
+      "agents_md_done_criteria": [
+        "Tests pass: `npm test`",
+        "Type check passes: `tsc --noEmit`",
+        "Dev server starts: `npm run dev`",
+        "No new dependencies added without justification in commit message"
+      ],
+      "next_steps_hints": [
+        "运行 `npm run dev` 启动开发服务器",
+        "对 AI 说：'读 AGENTS.md，按里面的架构开始做'",
+        "数据库表结构在 src/db.ts，按需扩展"
+      ]
+    },
+
+    {
+      "id": "web-fullstack",
+      "display_name": "全栈应用（需登录/云数据库）",
+      "description": "适合需要用户系统、多设备同步、协作的应用",
+      "examples": ["团队协作工具", "需要登录的管理后台", "多用户笔记应用"],
+      "trigger": { "use_case": "web", "data": ["cloud_db"], "users": ["multi"] },
+      "stack": {
+        "language": "TypeScript",
+        "framework": "Next.js 15 (App Router)",
+        "styling": "Tailwind v4",
+        "database": "Supabase (Postgres + Auth + Storage)",
+        "deployment": "Vercel"
+      },
+      "init_steps": [
+        {
+          "type": "exec",
+          "cmd": "npx create-next-app@latest . --typescript --tailwind --app --no-src-dir --import-alias '@/*' --use-npm",
+          "stdin": "y\n"
+        },
+        { "type": "exec", "cmd": "npm install @supabase/supabase-js @supabase/ssr" },
+        { "type": "write", "file": "lib/supabase.ts", "template": "web-fullstack/supabase.ts" },
+        { "type": "write", "file": ".env.local.example", "template": "web-fullstack/.env.local.example" }
+      ],
+      "gitignore_additions": [".next/", "node_modules/", ".env.local", ".vercel"],
+      "test_command": "npm test",
+      "build_command": "npm run build",
+      "dev_command": "npm run dev",
+      "lint_command": "npm run lint",
+      "agents_md_rules": [
+        "**NEVER** hardcode Supabase URL or anon key — use `process.env.NEXT_PUBLIC_SUPABASE_*`",
+        "**NEVER** expose Supabase service role key to client code — server actions / route handlers only",
+        "**NEVER** skip Row Level Security (RLS) — every new table MUST have RLS policies",
+        "**NEVER** use `useEffect` for data fetching — use Server Components or `use()` hook",
+        "**NEVER** use `pages/` directory — App Router only",
+        "**NEVER** install `next-auth` or other auth libraries — Supabase Auth handles it",
+        "**ALWAYS** add migrations to `supabase/migrations/` with timestamp prefix",
+        "**ALWAYS** ask user before changing database schema",
+        "**ALWAYS** use Server Components by default, only mark 'use client' when needed"
+      ],
+      "agents_md_done_criteria": [
+        "Build passes: `npm run build`",
+        "Type check passes: `tsc --noEmit`",
+        "RLS policies defined for any new tables",
+        "No service role key in client code",
+        "Auth flow tested manually (since Supabase needs real session)"
+      ],
+      "next_steps_hints": [
+        "复制 `.env.local.example` 为 `.env.local` 并填入 Supabase 凭证",
+        "在 supabase.com 创建项目",
+        "对 AI 说：'读 AGENTS.md，先设计数据库 schema'"
+      ]
+    },
+
+    {
+      "id": "browser-ext",
+      "display_name": "浏览器扩展",
+      "description": "Chrome/Edge/Firefox 通用扩展，可注入网页",
+      "examples": ["B 站去广告", "微博净化", "划词翻译", "网页收藏增强"],
+      "trigger": { "use_case": "browser_ext" },
+      "stack": {
+        "language": "TypeScript",
+        "framework": "Plasmo",
+        "ui": "React",
+        "styling": "Tailwind v4",
+        "manifest": "Manifest V3"
+      },
+      "init_steps": [
+        { "type": "exec", "cmd": "npm install -g pnpm@latest" },
+        { "type": "exec", "cmd": "pnpm create plasmo --with-tailwindcss .", "stdin": "\n" },
+        { "type": "exec", "cmd": "pnpm install" }
+      ],
+      "gitignore_additions": ["build/", ".plasmo/", "node_modules/", "keys.json"],
+      "test_command": "echo 'No tests yet (browser ext testing is hard)'",
+      "build_command": "pnpm build",
+      "dev_command": "pnpm dev",
+      "lint_command": "echo 'No lint configured'",
+      "agents_md_rules": [
+        "**NEVER** use `chrome.*` API directly — use Plasmo's storage/messaging APIs for cross-browser",
+        "**NEVER** request more permissions than absolutely needed in manifest",
+        "**NEVER** inject scripts into all URLs (`<all_urls>`) — scope to specific domains",
+        "**NEVER** make external network requests without explaining why to user",
+        "**NEVER** modify the page DOM destructively — use Shadow DOM for injected UI",
+        "**ALWAYS** ask before adding host permissions",
+        "**ALWAYS** test on at least Chrome before claiming done",
+        "**ALWAYS** version manifest properly in package.json"
+      ],
+      "agents_md_done_criteria": [
+        "Build passes: `pnpm build`",
+        "Extension can be loaded in Chrome (chrome://extensions, Load unpacked → build/chrome-mv3-dev)",
+        "Permissions in manifest are minimal",
+        "Tested on at least one real target page"
+      ],
+      "next_steps_hints": [
+        "运行 `pnpm dev` 启动热重载",
+        "在 Chrome 打开 chrome://extensions，加载 build/chrome-mv3-dev",
+        "对 AI 说：'读 AGENTS.md，开始做扩展功能'"
+      ]
+    },
+
+    {
+      "id": "python-ai",
+      "display_name": "Python AI 脚本 / 数据处理",
+      "description": "适合 LLM 应用、数据清洗、爬虫、自动化脚本",
+      "examples": ["用 GPT 整理我的笔记", "批量处理 CSV 数据", "自动化报表", "RAG 知识库"],
+      "trigger": { "use_case": "cli", "domain": "ai_or_data" },
+      "stack": {
+        "language": "Python 3.12+",
+        "package_manager": "uv",
+        "linter": "ruff",
+        "formatter": "ruff format",
+        "validation": "pydantic v2",
+        "llm_sdk": "openai (兼容 Anthropic via openrouter)"
+      },
+      "init_steps": [
+        { "type": "exec", "cmd": "curl -LsSf https://astral.sh/uv/install.sh | sh", "skip_if_exists": "uv" },
+        { "type": "exec", "cmd": "uv init" },
+        { "type": "exec", "cmd": "uv add pydantic openai python-dotenv" },
+        { "type": "exec", "cmd": "uv add --dev ruff pytest" },
+        { "type": "write", "file": "main.py", "template": "python-ai/main.py" },
+        { "type": "write", "file": ".env.example", "template": "python-ai/.env.example" },
+        { "type": "write", "file": "ruff.toml", "template": "python-ai/ruff.toml" }
+      ],
+      "gitignore_additions": [
+        ".venv/",
+        "__pycache__/",
+        "*.pyc",
+        ".env",
+        ".pytest_cache/",
+        ".ruff_cache/",
+        "dist/",
+        "*.egg-info/"
+      ],
+      "test_command": "uv run pytest",
+      "build_command": "uv build",
+      "dev_command": "uv run python main.py",
+      "lint_command": "uv run ruff check .",
+      "agents_md_rules": [
+        "**NEVER** use `pip install` directly — always use `uv add <package>`",
+        "**NEVER** activate venv manually — `uv run` handles it",
+        "**NEVER** hardcode API keys — use `os.environ.get('OPENAI_API_KEY')` with python-dotenv",
+        "**NEVER** use `requests` library — use `httpx` (modern, async-ready)",
+        "**NEVER** use bare `print()` for logs — use `logging` or `rich.print`",
+        "**NEVER** ignore type hints — all functions need return types",
+        "**ALWAYS** validate LLM outputs with pydantic models",
+        "**ALWAYS** use `uv run ruff format` before commit",
+        "**ALWAYS** handle OpenAI errors (RateLimitError, APIError) explicitly"
+      ],
+      "agents_md_done_criteria": [
+        "Lint passes: `uv run ruff check .`",
+        "Tests pass: `uv run pytest`",
+        "Type check passes: `uv run python -c 'import main'`",
+        "No hardcoded secrets",
+        "Has .env.example documenting required env vars"
+      ],
+      "next_steps_hints": [
+        "复制 `.env.example` 为 `.env` 并填入 API key",
+        "运行 `uv run python main.py` 测试",
+        "对 AI 说：'读 AGENTS.md，按里面的规范开始做'"
+      ]
+    },
+
+    {
+      "id": "node-cli",
+      "display_name": "Node 命令行工具",
+      "description": "适合开发者工具、自动化脚本、CLI 应用",
+      "examples": ["文件批量重命名", "Git 工作流工具", "项目脚手架", "API 调用 CLI"],
+      "trigger": { "use_case": "cli", "domain": "general" },
+      "stack": {
+        "language": "TypeScript",
+        "runtime": "Node.js 20+",
+        "package_manager": "npm",
+        "cli_framework": "commander",
+        "ui": "chalk + ora + inquirer",
+        "test": "vitest"
+      },
+      "init_steps": [
+        { "type": "exec", "cmd": "npm init -y" },
+        { "type": "exec", "cmd": "npm install commander chalk ora inquirer fs-extra" },
+        {
+          "type": "exec",
+          "cmd": "npm install -D typescript @types/node @types/inquirer @types/fs-extra vitest tsx"
+        },
+        { "type": "write", "file": "tsconfig.json", "template": "node-cli/tsconfig.json" },
+        { "type": "write", "file": "src/cli.ts", "template": "node-cli/cli.ts" },
+        {
+          "type": "patch",
+          "file": "package.json",
+          "patches": [
+            { "set": "type", "value": "module" },
+            { "set": "bin", "value": { "{{slug}}": "./dist/cli.js" } },
+            { "set": "scripts.build", "value": "tsc" },
+            { "set": "scripts.dev", "value": "tsx src/cli.ts" },
+            { "set": "scripts.test", "value": "vitest" },
+            { "set": "scripts.start", "value": "node dist/cli.js" }
+          ]
+        }
+      ],
+      "gitignore_additions": ["node_modules/", "dist/", "*.log"],
+      "test_command": "npm test",
+      "build_command": "npm run build",
+      "dev_command": "npm run dev",
+      "lint_command": "echo 'No lint configured'",
+      "agents_md_rules": [
+        "**NEVER** use CommonJS `require()` — ESM `import` only (package.json type: module)",
+        "**NEVER** use `process.argv` directly — use commander for arg parsing",
+        "**NEVER** use `console.log` for user-facing output — use chalk for color",
+        "**NEVER** swallow errors silently — always show user-friendly message",
+        "**ALWAYS** write tests with vitest for any command logic",
+        "**ALWAYS** add a Spinner (ora) for any operation > 500ms",
+        "**ALWAYS** use absolute paths via `path.resolve()` — never assume cwd"
+      ],
+      "agents_md_done_criteria": [
+        "Build passes: `npm run build`",
+        "Tests pass: `npm test`",
+        "CLI runs: `npm start -- --help`",
+        "Help output is clear and well-formatted"
+      ],
+      "next_steps_hints": [
+        "运行 `npm run dev -- --help` 测试 CLI",
+        "对 AI 说：'读 AGENTS.md，开始实现核心命令'"
+      ]
+    }
+  ],
+
+  "fallback": {
+    "id": "generic",
+    "display_name": "通用项目",
+    "description": "无匹配架构时的兜底，仅生成规则文件 + git，不跑脚手架",
+    "stack": { "language": "Unknown" },
+    "init_steps": [{ "type": "write", "file": "README.md", "template": "generic/README.md" }],
+    "gitignore_additions": ["node_modules/", ".env", "*.log", ".DS_Store"],
+    "test_command": "",
+    "build_command": "",
+    "dev_command": "",
+    "lint_command": "",
+    "agents_md_rules": [
+      "**NEVER** commit `.env` or any file with secrets",
+      "**NEVER** add dependencies without explaining why in commit message"
+    ],
+    "agents_md_done_criteria": ["Code change is minimal and focused", "No secrets in code"],
+    "next_steps_hints": [
+      "这是通用骨架，没有特定脚手架",
+      "对 AI 说：'读 AGENTS.md，帮我搭建项目结构'"
+    ]
+  }
+}

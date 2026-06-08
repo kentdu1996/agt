@@ -1,0 +1,61 @@
+{
+  "scenes": [
+    {
+      "keywords": ["b站", "bilibili", "哔哩哔哩", "微博", "知乎", "小红书", "抖音", "tiktok", "instagram", "twitter"],
+      "rules": [
+        "**NEVER** hardcode these social media platform API URLs — they change frequently, use environment variables",
+        "**NEVER** scrape these sites without rate limiting (max 1 request per 2 seconds)",
+        "**NEVER** store user credentials of these platforms — use OAuth or read-only public data"
+      ]
+    },
+    {
+      "keywords": ["爬虫", "scrape", "crawler", "采集", "抓取"],
+      "rules": [
+        "**NEVER** ignore robots.txt",
+        "**NEVER** crawl without delay (minimum 1 second between requests)",
+        "**ALWAYS** identify your scraper with a clear User-Agent",
+        "**NEVER** store crawled data without considering copyright/ToS"
+      ]
+    },
+    {
+      "keywords": ["微信", "wechat", "公众号"],
+      "rules": [
+        "**NEVER** use unofficial WeChat APIs — they get blocked frequently",
+        "**ALWAYS** use official WeChat Open Platform endpoints"
+      ]
+    },
+    {
+      "keywords": ["支付", "pay", "stripe", "alipay", "wxpay", "微信支付", "支付宝"],
+      "rules": [
+        "**NEVER** handle credit card numbers directly — use payment provider's hosted form",
+        "**NEVER** skip signature verification on payment webhooks",
+        "**ALWAYS** ask user before modifying any payment-related code"
+      ]
+    },
+    {
+      "keywords": ["登录", "auth", "login", "认证", "注册"],
+      "rules": [
+        "**NEVER** store passwords in plain text — always hash with bcrypt/argon2",
+        "**NEVER** put session tokens in localStorage — use httpOnly cookies",
+        "**NEVER** skip CSRF protection on state-changing endpoints"
+      ]
+    },
+    {
+      "keywords": ["ai", "gpt", "claude", "gemini", "llm", "大模型", "chatbot", "聊天机器人"],
+      "rules": [
+        "**NEVER** send user PII to LLM APIs without consent",
+        "**NEVER** trust LLM output without validation (use pydantic/zod schema)",
+        "**ALWAYS** add timeout and retry logic for LLM calls",
+        "**ALWAYS** log token usage to detect runaway costs"
+      ]
+    },
+    {
+      "keywords": ["上传", "upload", "文件", "file"],
+      "rules": [
+        "**NEVER** trust file extensions — validate MIME type and magic bytes",
+        "**ALWAYS** limit file size (default max 10MB)",
+        "**ALWAYS** scan uploads for malicious content before processing"
+      ]
+    }
+  ]
+}

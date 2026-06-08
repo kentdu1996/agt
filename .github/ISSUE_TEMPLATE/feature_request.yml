@@ -1,0 +1,16 @@
+name: Feature request
+description: Suggest an idea, a new architecture, or a new rule
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like?
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: Why is it useful?
+    validations:
+      required: false

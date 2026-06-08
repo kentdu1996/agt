@@ -1,0 +1,18 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+coverage/
+.vitest/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+
+# Internal planning docs — not part of the open-source repo
+01-*.md
+02-*.md
+03-*.md
+04-*.md
+agentguard-mvp-v2/
+agentguard-mvp-v2.tar.gz
