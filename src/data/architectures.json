@@ -119,7 +119,7 @@
         "manifest": "Manifest V3"
       },
       "init_steps": [
-        { "type": "exec", "cmd": "npm install -g pnpm@latest" },
+        { "type": "exec", "cmd": "npm install -g pnpm@9" },
         { "type": "exec", "cmd": "pnpm create plasmo --with-tailwindcss .", "stdin": "\n" },
         { "type": "exec", "cmd": "pnpm install" }
       ],

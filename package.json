@@ -1,5 +1,5 @@
 {
-  "name": "agt",
+  "name": "@kentdu1996/agt",
   "version": "2.0.0",
   "description": "One-liner to bootstrap an AI-friendly project with expert engineering posture — and built-in runtime guardrails.",
   "type": "module",

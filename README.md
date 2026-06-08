@@ -10,7 +10,7 @@
 ## 30 秒上手 / 30-second start
 
 ```bash
-npx agt new "我想做一个 B 站浏览记录管理"
+npx @kentdu1996/agt new "我想做一个 B 站浏览记录管理"
 ```
 
 ```
@@ -40,7 +40,7 @@ cursor .          # 或 claude / trae
 ### 方式 1：免安装（推荐试用）
 
 ```bash
-npx agt new "番茄钟网页"
+npx @kentdu1996/agt new "番茄钟网页"
 ```
 
 `npx` 会临时下载并运行，最省事，适合偶尔用。
@@ -48,8 +48,8 @@ npx agt new "番茄钟网页"
 ### 方式 2：全局安装（推荐长期使用）
 
 ```bash
-npm i -g agt
-agt --version     # 验证安装成功
+npm i -g @kentdu1996/agt
+agt --version     # 验证安装成功（命令名就是 agt）
 agt new "番茄钟网页"
 ```
 
@@ -64,7 +64,7 @@ npm link          # 把 `agt` 命令注册到全局
 agt --version
 ```
 
-> 卸载：`npm rm -g agt`（或源码方式用 `npm unlink -g agt`）。
+> 卸载：`npm rm -g @kentdu1996/agt`（或源码方式用 `npm unlink -g @kentdu1996/agt`）。
 
 ---
 
